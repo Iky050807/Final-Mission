@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset Pengerjaan — Final Mission</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<meta name="csrf" content="{{ csrf }}">
+<style>.rt{width:100%;border-collapse:collapse}.rt td,.rt th{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.72);display:grid;place-items:center;padding:16px;z-index:50}.dlg[hidden]{display:none}</style>
+</head><body>
+<div class="bg-vignette"></div><div class="bg-grid"></div>
+<main class="container" style="max-width:760px;padding:32px 0">
+  <div class="glass hud-corners" style="padding:24px">
+    <span class="eyebrow">WEBSITE 3 · FINAL MISSION</span>
+    <h1 style="font-size:1.4rem;margin:8px 0">Reset Pengerjaan Kelompok</h1>
+    <p class="text-muted">Menghapus jawaban Final Mission, anggota, dan Presentation Studio milik <b>satu kelompok</b> pada <b>Website 3 saja</b>. Identitas kelompok, kode akses, studi kasus, kelompok lain, serta Website 1 dan 2 tidak berubah (reset di sana terpisah).
+      File PPTX yang sudah diunduh peserta ada di perangkat mereka dan tidak dapat dihapus dari sini.</p>
+    <table class="rt"><tr><th>Kelompok</th><th>Final Mission</th><th>Presentasi</th></tr>
+      {% for g in groups %}<tr><td>Kelompok {{ g.group_number }} — {{ g.name }}</td><td>{{ {'submitted':'sudah submit','draft':'draft'}.get(g.submission, 'belum ada data') }}</td><td>{{ 'ada' if g.has_presentation else 'belum ada' }}</td></tr>{% endfor %}</table>
+    <div style="display:flex;gap:12px;align-items:end;margin-top:18px;flex-wrap:wrap">
+      <div class="field" style="margin:0"><label for="grp">Kelompok</label>
+        <select id="grp">{% for g in groups %}<option value="{{ g.group_number }}" {{ 'selected' if selected == g.group_number }}>Kelompok {{ g.group_number }}</option>{% endfor %}</select></div>
+      <button class="btn btn-purple" type="button" id="openBtn">Reset Pengerjaan</button>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-ghost">Logout</a>
+    </div>
+    <div id="notice" role="status" aria-live="polite" style="margin-top:14px"></div>
+  </div>
+</main>
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dt" hidden>
+  <div class="glass" style="padding:22px;width:min(520px,100%)"><h2 id="dt" style="font-size:1.1rem">Konfirmasi Reset</h2><p id="dtext"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-ghost" type="button" id="cancelBtn">Batal</button><button class="btn btn-purple" type="button" id="okBtn">Konfirmasi Reset</button></div></div>
+</div>
+<script src="{{ url_for('static', filename='js/admin_reset.js') }}"></script>
+</body></html>

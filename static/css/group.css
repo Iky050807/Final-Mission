@@ -1,0 +1,30 @@
+/* ============================================================================
+   group.css — khusus halaman pilih kelompok
+   ============================================================================ */
+
+.group-select-main{ padding: 50px 24px 70px; }
+.group-select-head{ text-align:center; max-width:600px; margin: 0 auto 36px; }
+.group-select-head h1{ font-size: clamp(1.5rem, 4vw, 2.1rem); margin-top:10px; }
+
+.group-grid{
+  display:grid; grid-template-columns: repeat(5, 1fr); gap:16px;
+  max-width: 980px; margin: 0 auto;
+}
+@media (max-width:900px){ .group-grid{ grid-template-columns: repeat(3, 1fr); } }
+@media (max-width:600px){ .group-grid{ grid-template-columns: repeat(2, 1fr); } }
+
+.group-card{
+  padding: 22px 16px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  cursor:pointer; transition: all .22s ease; text-align:center;
+  font-family: var(--font-body); color: var(--text);
+}
+.group-card:hover{ transform: translateY(-4px); border-color: var(--purple); box-shadow: var(--glow-purple); }
+.group-card .g-num{ font-family: var(--font-mono); font-size:.68rem; color: var(--text-dim); letter-spacing:.1em; }
+.group-card .g-name{ font-weight:700; font-size:.98rem; }
+
+.g-status-badge{
+  font-family: var(--font-mono); font-size:.62rem; padding:4px 10px; border-radius:999px;
+  border:1px solid var(--border-soft); color: var(--text-muted); letter-spacing:.05em;
+}
+.g-status-in_progress{ color: var(--warn); border-color: rgba(255,176,32,.4); }
+.g-status-completed{ color: var(--online); border-color: rgba(34,229,132,.4); }

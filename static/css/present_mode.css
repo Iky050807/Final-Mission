@@ -1,0 +1,49 @@
+/* ============================================================================
+   present_mode.css — Presentation Mode fullscreen
+   ============================================================================ */
+
+.pm-body{ overflow:hidden; background:#030b1a; }
+
+.pm-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 14px 26px; border-bottom: 1px solid var(--border-soft);
+}
+
+.pm-stage{
+  height: calc(100vh - 61px);
+  display:flex; align-items:center; justify-content:center; padding: 26px;
+}
+.pm-slide-container{
+  width:100%; display:flex; justify-content:center; position:relative;
+}
+.pm-slide-container .sr-page{ animation: slide-fade-in .25s ease both; }
+@keyframes slide-fade-in{ from{ opacity:0; transform: scale(.985);} to{ opacity:1; transform: scale(1);} }
+
+.pm-nav{
+  position: fixed; left:0; right:0; bottom: 22px;
+  display:flex; align-items:center; justify-content:center; gap:16px; z-index:40;
+}
+.pm-counter{ font-family: var(--font-mono); font-size:.8rem; color: var(--text-muted); min-width:60px; text-align:center; }
+
+/* Tombol X — selalu terlihat, baik di mode biasa maupun fullscreen */
+.pm-exit-btn{
+  position: fixed; top:18px; right:20px; z-index:50;
+  width:42px; height:42px; padding:0; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; line-height:1;
+  background: rgba(255,77,109,.14); border:1px solid rgba(255,77,109,.45); color:#ff8fa3;
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  transition: all .2s ease;
+}
+.pm-exit-btn:hover{
+  background: rgba(255,77,109,.28); border-color: rgba(255,77,109,.7); color:#ffffff;
+  box-shadow: 0 0 0 4px rgba(255,77,109,.14), 0 4px 18px rgba(0,0,0,.35);
+  transform: scale(1.06);
+}
+
+body.pm-fullscreen .pm-toolbar{ display:none; }
+body.pm-fullscreen .pm-stage{ height:100vh; padding: 4vh 4vw; }
+
+@media (max-width:720px){
+  .pm-toolbar{ flex-direction:column; gap:10px; align-items:flex-start; }
+}

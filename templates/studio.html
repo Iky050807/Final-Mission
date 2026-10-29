@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation Studio // Restore Data Lab</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/presentation_layouts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/studio.css') }}">
+</head>
+<body>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-ring"></div>
+    <div class="loading-text">OPENING PRESENTATION STUDIO...</div>
+  </div>
+
+  <div class="bg-vignette"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-scanline"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="app-shell">
+    <header class="hud-bar">
+      <a href="{{ url_for('dashboard') }}" class="topbar-link">⌂ Dashboard Kelompok</a>
+      <div class="hud-id">PRESENTATION STUDIO // <b>{{ group.name.upper() }}</b></div>
+      <div style="display:flex; gap:10px;">
+        <span class="mono text-muted" id="saveStatus" role="status" style="font-size:.72rem; align-self:center;">Tersimpan</span>
+        <button class="btn btn-ghost btn-sm" id="retrySaveBtn" style="display:none;">↻ Coba simpan lagi</button>
+        <button class="btn btn-ghost btn-sm" id="previewBtn">👁 Preview</button>
+        <button class="btn btn-ghost btn-sm" id="presentBtn">▶ Present</button>
+        <button class="btn btn-purple btn-sm" id="downloadBtn">⬇ Download PPTX</button>
+      </div>
+    </header>
+
+    <div id="studioBanners" style="padding:0 22px;">
+      <div class="alert alert-warn show" id="draftBanner" style="display:none;">
+        Ditemukan <b>draft lokal yang belum tersimpan</b> di browser ini.
+        <button type="button" class="btn btn-ghost btn-sm" id="draftRestore">Pulihkan draft</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="draftDiscard">Buang</button>
+      </div>
+      {% if old_schema %}
+      <div class="alert alert-warn show" id="oldBanner">
+        Presentasi ini memakai <b>struktur lama</b> (semua analisis dalam satu slide). Struktur baru memisahkan Cover, Latar Belakang,
+        Masalah Utama, Abstraction, Decomposition, Pattern Recognition, Algoritma, Solusi, Kesimpulan, dan Penutup.
+        <button type="button" class="btn btn-purple btn-sm" id="rebuildBtn">Susun ulang dari jawaban Final Mission</button>
+        <span class="text-muted" style="font-size:.78rem;">(versi lama disimpan sebagai cadangan)</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="studio-layout">
+
+      <!-- ============ SLIDE LIST ============ -->
+      <aside class="studio-slide-list glass">
+        <div class="studio-panel-label">Slides</div>
+        <div id="slideListItems"></div>
+        <button type="button" class="btn btn-ghost btn-sm studio-add-slide" id="addSlideBtn">+ Tambah Slide</button>
+
+        <div class="studio-panel-label" style="margin-top:22px;">Theme</div>
+        <div class="studio-theme-grid" id="themeGrid">
+          {% for key, label, accent1, accent2, bg, text in themes %}
+          <button type="button" class="studio-theme-swatch" data-theme="{{ key }}"
+                  data-bg="{{ bg }}" data-text="{{ text }}" data-accent="{{ accent1 }}"
+                  style="background:{{ bg }}; color:{{ text }}; border-color:{{ accent1 }};">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <p class="mono text-muted" style="font-size:.68rem; margin-top:8px;">Menerapkan warna tema ke seluruh slide.</p>
+
+        <div class="studio-panel-label" style="margin-top:22px;">Anggota Kelompok (maks. 10)</div>
+        <div id="memberSlots">
+          {% for i in range(10) %}
+          <div class="field member-slot">
+            <label for="member_{{ i }}">Anggota {{ i + 1 }}</label>
+            <input type="text" id="member_{{ i }}" maxlength="120" autocomplete="off" value="{{ members[i] }}">
+          </div>
+          {% endfor %}
+        </div>
+        <p class="mono text-muted" style="font-size:.68rem;" id="memberStatus" role="status">Tersimpan</p>
+      </aside>
+
+      <!-- ============ EDITOR FORM ============ -->
+      <section class="studio-editor glass">
+        <div class="studio-panel-label">Edit Slide</div>
+
+        <div class="field">
+          <label for="ed_layout">Layout Slide</label>
+          <select id="ed_layout">
+            {% for key, label in layouts %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="field" style="grid-column:1/-1;">
+            <label for="ed_title">Judul</label>
+            <input type="text" id="ed_title">
+          </div>
+
+          <div class="field" id="fieldSubtitle" style="grid-column:1/-1; display:none;">
+            <label for="ed_subtitle">Subjudul</label>
+            <input type="text" id="ed_subtitle">
+          </div>
+          <div class="field" id="fieldGroupName" style="display:none;">
+            <label for="ed_group_name">Nama Kelompok</label>
+            <input type="text" id="ed_group_name">
+          </div>
+          <div class="field" id="fieldClosingStatement" style="grid-column:1/-1; display:none;">
+            <label for="ed_closing_statement">Closing Statement</label>
+            <textarea id="ed_closing_statement" rows="2"></textarea>
+          </div>
+
+          <div class="field" id="fieldMembers" style="grid-column:1/-1; display:none;">
+            <label for="ed_members">Nama Anggota (satu nama per baris)</label>
+            <textarea id="ed_members" rows="4" placeholder="Nama 1&#10;Nama 2&#10;Nama 3"></textarea>
+          </div>
+
+          <div class="field" id="fieldMissions" style="grid-column:1/-1; display:none;">
+            <label for="ed_missions_text">Status Mission (satu per baris, format: "Icon Nama - STATUS")</label>
+            <textarea id="ed_missions_text" rows="5"></textarea>
+          </div>
+
+          <div class="field" id="fieldBody" style="grid-column:1/-1; display:none;">
+            <label for="ed_body">Isi Teks <span class="mono text-muted" style="font-size:.7rem;">(pisahkan dengan baris kosong untuk blok/text-box terpisah)</span></label>
+            <textarea id="ed_body" rows="7"></textarea>
+          </div>
+          <div class="field" id="fieldBodyRight" style="grid-column:1/-1; display:none;">
+            <label for="ed_body_right">Isi Teks — Kolom Kanan</label>
+            <textarea id="ed_body_right" rows="7"></textarea>
+          </div>
+          <div class="field" id="fieldAddTextBox" style="grid-column:1/-1; display:none;">
+            <button type="button" class="btn btn-ghost btn-sm" id="addTextBoxBtn">+ Tambah Text Box</button>
+          </div>
+
+          <div class="field">
+            <label for="ed_font">Font</label>
+            <select id="ed_font">{% for f in fonts %}<option value="{{ f }}">{{ f }}</option>{% endfor %}</select>
+          </div>
+          <div class="field">
+            <label for="ed_size">Ukuran Font</label>
+            <input type="number" id="ed_size" min="16" max="40">
+          </div>
+
+          <div class="field">
+            <label>Gaya Teks</label>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-ghost btn-sm studio-toggle" id="ed_bold"><b>B</b></button>
+              <button type="button" class="btn btn-ghost btn-sm studio-toggle" id="ed_italic"><i>I</i></button>
+              <button type="button" class="btn btn-ghost btn-sm studio-toggle" id="ed_underline"><u>U</u></button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Alignment</label>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-ghost btn-sm studio-align" data-align="left">⬅</button>
+              <button type="button" class="btn btn-ghost btn-sm studio-align" data-align="center">⬌</button>
+              <button type="button" class="btn btn-ghost btn-sm studio-align" data-align="right">➡</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="ed_text_color">Warna Teks</label>
+            <input type="color" id="ed_text_color">
+          </div>
+          <div class="field">
+            <label for="ed_bg_color">Warna Background</label>
+            <input type="color" id="ed_bg_color">
+          </div>
+          <div class="field">
+            <label for="ed_accent_color">Warna Aksen</label>
+            <input type="color" id="ed_accent_color">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============ LIVE PREVIEW ============ -->
+      <section class="studio-preview-wrap">
+        <div class="studio-panel-label">Live Preview</div>
+        <div class="studio-preview-stage">
+          <div class="studio-slide-frame" id="previewFrame"></div>
+        </div>
+        <div class="page-label" id="pageLabel"></div>
+        <div class="pm-nav" style="position:static; margin-top:8px;">
+          <button type="button" class="btn btn-ghost btn-sm" id="pagePrev">← Halaman</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="pageNext">Halaman →</button>
+        </div>
+        <p class="mono text-muted" style="font-size:.68rem; margin-top:8px;">Preview menampilkan hasil yang sama dengan PPTX. Materi yang panjang dipecah otomatis menjadi beberapa halaman (font tidak dikecilkan).</p>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ============ PREVIEW ALL MODAL ============ -->
+  <div class="overlay" id="previewAllOverlay">
+    <div class="preview-all-box glass hud-corners">
+      <button type="button" class="btn btn-ghost btn-sm" id="closePreviewAllBtn" style="position:absolute; top:14px; right:14px; z-index:5;">✕ Tutup</button>
+      <div class="studio-slide-frame" id="previewAllFrame" style="margin:auto;"></div>
+      <div class="pm-nav" style="position:static; margin-top:16px;">
+        <button type="button" class="btn btn-ghost btn-sm" id="previewAllPrevBtn">← Previous</button>
+        <span class="pm-counter" id="previewAllCounter">1 / 1</span>
+        <button type="button" class="btn btn-ghost btn-sm" id="previewAllNextBtn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script id="configData" type="application/json">{{ config|tojson }}</script>
+  <script id="deckData" type="application/json">{{ deck|tojson }}</script>
+  <script>const GROUP_NO = {{ group.group_number|tojson }}, RESET_EPOCH = {{ reset_epoch|tojson }};</script>
+  <script src="{{ url_for('static', filename='js/slide_render.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/studio.js') }}"></script>
+</body>
+</html>

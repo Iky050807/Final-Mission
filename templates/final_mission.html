@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Mission // Restore Data Lab</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mission.css') }}">
+</head>
+<body>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-ring"></div>
+    <div class="loading-text">MAIN SERVER ONLINE...</div>
+  </div>
+
+  <div class="bg-vignette"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-scanline"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="app-shell">
+    <header class="hud-bar">
+      <a href="{{ url_for('dashboard') }}" class="topbar-link">⌂ Beranda Final Mission</a>
+      <div class="hud-id">KELOMPOK <b>{{ group.group_number }}</b> // FINAL MISSION</div>
+    </header>
+
+    <div class="main-content">
+      <main class="mission-main" style="max-width:920px;">
+        <div class="mission-header rise-in">
+          <span class="eyebrow">◆ MAIN SERVER ONLINE // FINAL MISSION</span>
+          <h1>Seluruh anggota kelompok berkumpul dan selesaikan bersama-sama.</h1>
+          <div class="station-status online" style="margin-bottom:6px;">
+            <span class="pulse-dot"></span><span class="status-label">MAIN SERVER ONLINE</span>
+          </div>
+        </div>
+
+        <div class="repair-panel glass hud-corners rise-in delay-1">
+          <div class="r-head"><span class="r-num">#</span><span class="r-title">Studi Kasus</span></div>
+          <p style="color:var(--text);">{{ case_study }}</p>
+        </div>
+
+        <div class="repair-panel glass hud-corners rise-in delay-1">
+          <div class="r-head"><span class="r-num">👥</span><span class="r-title">Anggota Kelompok (maksimal 10)</span></div>
+          <p class="field-hint">Isi nama anggota yang hadir. Nama panjang boleh; semua nama akan tampil di slide cover dan file PPTX.</p>
+          <div class="member-grid" id="memberGrid">
+            {% for i in range(10) %}
+            <div class="field member-slot" style="margin-bottom:0;">
+              <label for="member_{{ i }}">Anggota {{ i + 1 }}</label>
+              <input type="text" id="member_{{ i }}" maxlength="120" autocomplete="off" value="{{ members[i] }}">
+            </div>
+            {% endfor %}
+          </div>
+          <p class="mono text-muted save-note" id="memberStatus" role="status">Tersimpan</p>
+        </div>
+
+        <form id="finalForm">
+          {% for f in fields %}
+          <div class="repair-panel glass hud-corners rise-in delay-{{ (loop.index % 5) + 1 }}">
+            <div class="r-head"><span class="r-num">{{ f.icon }}</span><span class="r-title">{{ loop.index }}. {{ f.label }}</span></div>
+            {% if f.hint %}<p class="field-hint">{{ f.hint }}</p>{% endif %}
+            <div class="field" style="margin-bottom:0;">
+              <textarea data-field="{{ f.id }}" rows="{{ 8 if f.type == 'code' else 4 }}"
+                        placeholder="Tulis jawaban kelompok kalian di sini..."
+                        style="{{ 'font-family: var(--font-mono);' if f.type == 'code' }}">{{ answers.get(f.id, '') }}</textarea>
+            </div>
+          </div>
+          {% endfor %}
+
+          <p class="mono text-muted" style="text-align:center; font-size:.75rem; margin: 6px 0 18px;">💾 Jawaban tersimpan otomatis ke server ±1,5 detik setelah kalian berhenti mengetik.</p>
+          <p class="mono save-note" id="saveStatus" role="status" style="text-align:center;">Tersimpan</p>
+          <p style="text-align:center;"><button type="button" class="btn btn-ghost btn-sm" id="retryBtn" style="display:none;">↻ Coba simpan lagi</button></p>
+
+          <div class="submit-row" style="justify-content:center;">
+            <button type="button" class="btn btn-purple" id="submitFinalBtn">🚀 SUBMIT FINAL MISSION</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <div class="overlay" id="scanOverlay">
+    <div class="modal-box glass hud-corners rise-in">
+      <div class="loader-ring" style="margin:0 auto;"></div>
+      <div class="scan-progress">Memeriksa Hasil Final Mission...</div>
+      <div class="scan-bar"><div class="scan-bar-fill"></div></div>
+      <div class="scan-percent">0%</div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>const GROUP_NO = {{ group.group_number|tojson }}, RESET_EPOCH = {{ reset_epoch|tojson }};</script>
+  <script src="{{ url_for('static', filename='js/final_mission.js') }}"></script>
+</body>
+</html>

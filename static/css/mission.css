@@ -1,0 +1,15 @@
+/* ============================================================================
+   mission.css — dipakai bersama oleh semua halaman server (repair page)
+   ============================================================================ */
+
+.repair-panel.correct{ border-color: rgba(34,229,132,.45); }
+
+@media (max-width:600px){
+  .mission-main{ padding:22px 18px 50px; }
+}
+
+.field-hint{ font-size:.88rem; color: var(--text-muted); margin:0 0 10px; overflow-wrap:anywhere; }
+.member-grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+@media (max-width:600px){ .member-grid{ grid-template-columns: 1fr; } }
+.member-slot input{ width:100%; }
+.save-note{ font-size:.76rem; }

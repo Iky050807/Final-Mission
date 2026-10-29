@@ -1,0 +1,4 @@
+/* Kanvas slide digambar dari data server (slide_render.js). Tidak ada overflow:hidden pada teks. */
+.sr-page{ box-shadow: 0 24px 60px rgba(0,0,0,.45); margin:0 auto; }
+.sr-text div{ overflow-wrap:anywhere; }
+.page-label{ font-family: var(--font-mono); font-size:.7rem; color: var(--text-muted); text-align:center; margin-top:8px; }

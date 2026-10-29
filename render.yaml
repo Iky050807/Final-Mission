@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: axis-final
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 60 --max-requests 500 --max-requests-jitter 50
+    healthCheckPath: /healthz
+    envVars:
+      - key: FINAL_CODE
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: GROUP_CODES
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

@@ -1,0 +1,77 @@
+{
+ "case_study": "Sistem peminjaman laboratorium ITSB sering mengalami bentrok jadwal sehingga banyak mahasiswa tidak memperoleh jadwal praktikum.",
+ "fields": [
+  {
+   "id": "latar_belakang",
+   "label": "Latar Belakang",
+   "icon": "📖",
+   "type": "textarea",
+   "short": "Latar Belakang",
+   "hint": "Jelaskan kondisi awal dan alasan masalah ini perlu dianalisis."
+  },
+  {
+   "id": "masalah_utama",
+   "label": "Masalah Utama",
+   "icon": "❓",
+   "type": "textarea",
+   "short": "Masalah Utama",
+   "hint": "Tulis rumusan masalah, fakta pendukung, dan dampak utamanya."
+  },
+  {
+   "id": "abstraction",
+   "label": "Abstraction",
+   "icon": "🎯",
+   "type": "textarea",
+   "short": "Abstraction",
+   "hint": "Tulis informasi yang relevan, informasi yang diabaikan, dan alasan pemilihannya."
+  },
+  {
+   "id": "decomposition",
+   "label": "Decomposition",
+   "icon": "🧩",
+   "type": "textarea",
+   "short": "Decomposition",
+   "hint": "Pecah masalah menjadi submasalah dan jelaskan hubungan antarsubmasalah."
+  },
+  {
+   "id": "pattern_recognition",
+   "label": "Pattern Recognition",
+   "icon": "🔍",
+   "type": "textarea",
+   "short": "Pattern Recognition",
+   "hint": "Tulis pola yang ditemukan, bukti atau contohnya, dan kaitannya dengan masalah utama."
+  },
+  {
+   "id": "algoritma",
+   "label": "Algoritma",
+   "icon": "📜",
+   "type": "textarea",
+   "short": "Algoritma",
+   "hint": "Tulis langkah penyelesaian secara berurutan — SATU LANGKAH PER BARIS."
+  },
+  {
+   "id": "solusi",
+   "label": "Solusi yang Diusulkan",
+   "icon": "💡",
+   "type": "textarea",
+   "short": "Solusi yang Diusulkan",
+   "hint": "Tulis solusi utama, cara solusi menjawab masalah, dan hasil yang diharapkan."
+  },
+  {
+   "id": "program_python",
+   "label": "Program Python Sederhana",
+   "icon": "🐍",
+   "type": "code",
+   "short": "Program Python Sederhana",
+   "hint": "Tulis kode Python sederhana yang mendukung solusi."
+  },
+  {
+   "id": "kesimpulan",
+   "label": "Kesimpulan",
+   "icon": "✅",
+   "type": "textarea",
+   "short": "Kesimpulan",
+   "hint": "Tulis ringkasan temuan, hubungan analisis dengan solusi, dan poin utama."
+  }
+ ]
+}

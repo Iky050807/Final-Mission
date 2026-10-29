@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Final Mission</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head><body>
+<div class="bg-vignette"></div><div class="bg-grid"></div>
+<main class="container" style="max-width:420px;padding-top:12vh">
+  <div class="glass hud-corners" style="padding:24px">
+    <span class="eyebrow">WEBSITE 3 · PANEL ADMIN</span>
+    <h1 style="font-size:1.4rem;margin:8px 0 14px">Masuk Admin</h1>
+    {% if error %}<p role="alert" style="color:#ff8da1">{{ error }}</p>{% endif %}
+    <form method="post" action="{{ url_for('admin_login_post') }}">
+      <div class="field"><label for="pw">Password admin</label><input id="pw" name="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-purple" type="submit">Masuk</button>
+    </form>
+  </div>
+</main></body></html>

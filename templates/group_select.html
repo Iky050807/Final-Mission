@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilih Kelompok // Restore Data Lab</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}">
+</head>
+<body>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-ring"></div>
+    <div class="loading-text">LOADING TEAM REGISTRY...</div>
+  </div>
+
+  <div class="bg-vignette"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-scanline"></div>
+  <div class="particles" id="particles"></div>
+
+  <main class="container group-select-main">
+    <div class="group-select-head rise-in">
+      <span class="eyebrow">OPERATION: RESTORE DATA LAB</span>
+      <h1>Masukkan Identitas Kelompok</h1>
+      <p style="margin-top:8px;">Pilih kelompok kalian dan masukkan kode akses dari panitia (kelompok tidak dapat diganti setelah masuk). Jawaban dan presentasi setiap kelompok tersimpan terpisah.</p>
+    </div>
+
+    <div class="group-grid" id="groupGrid">
+      {% for grp in groups %}
+      <button type="button" class="group-card glass hud-corners rise-in delay-{{ (loop.index % 5) + 1 }}"
+              data-number="{{ grp.group_number }}" data-needs-code="true">
+        <span class="g-num">KELOMPOK {{ grp.group_number }}</span>
+        <span class="g-name">{{ grp.name }}</span>
+      </button>
+      {% endfor %}
+    </div>
+  </main>
+
+  <!-- ============ ACCESS CODE MODAL (jika kelompok pakai kode akses) ============ -->
+  <div class="overlay" id="accessCodeOverlay">
+    <div class="modal-box glass hud-corners rise-in">
+      <span class="eyebrow">VERIFIKASI KELOMPOK</span>
+      <h2 style="font-size:1.15rem; margin:10px 0 20px;" id="accessCodeGroupLabel">Kelompok</h2>
+      <div class="field">
+        <label for="accessCodeInput">Kode Akses Kelompok</label>
+        <input type="text" id="accessCodeInput" placeholder="Masukkan kode akses" autocomplete="off">
+      </div>
+      <div class="alert alert-error" id="accessCodeError">❌ Kode akses salah.</div>
+      <button type="button" class="btn btn-purple btn-block" id="accessCodeSubmit" style="margin-top:6px;">MASUK →</button>
+      <button type="button" class="btn btn-ghost btn-block" id="accessCodeCancel" style="margin-top:10px;">Batal</button>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/group.js') }}"></script>
+</body>
+</html>

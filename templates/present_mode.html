@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ group.name }} — Presentation // Restore Data Lab</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/presentation_layouts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/present_mode.css') }}">
+</head>
+<body class="pm-body">
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-ring"></div>
+    <div class="loading-text">LOADING PRESENTATION...</div>
+  </div>
+
+  <header class="pm-toolbar" id="pmToolbar">
+    <a href="{{ url_for('presentation_studio') }}" class="topbar-link">⌂ Presentation Studio</a>
+    <button class="btn btn-purple btn-sm" id="enterFullscreenBtn">⛶ Fullscreen</button>
+  </header>
+
+  <main class="pm-stage" id="pmStage">
+    <div class="pm-slide-container" id="pmSlideContainer"></div>
+  </main>
+
+  <div class="pm-nav" id="pmNav">
+    <button class="btn btn-ghost btn-sm" id="pmPrevBtn">← Previous</button>
+    <span class="pm-counter" id="pmCounter">1 / 1</span>
+    <button class="btn btn-ghost btn-sm" id="pmNextBtn">Next →</button>
+  </div>
+  <button class="btn pm-exit-btn" id="pmExitBtn" title="Keluar dari Presentation Mode (Esc)">✕</button>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script id="deckData" type="application/json">{{ deck|tojson }}</script>
+  <script>const STUDIO_URL = {{ url_for('presentation_studio')|tojson }};</script>
+  <script src="{{ url_for('static', filename='js/slide_render.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/present_mode.js') }}"></script>
+</body>
+</html>
