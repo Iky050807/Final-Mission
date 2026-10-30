@@ -16,11 +16,21 @@ def group_overview(n):
     return {"group_number": n, "submission": sub["status"] if sub else None, "has_presentation": bool(pres), "epoch": get_epoch(n)}
 
 
-def reset_group(n):
-    """Satu transaksi. Melempar exception bila gagal (rollback penuh); pemanggil TIDAK boleh melaporkan sukses."""
+class StaleEpoch(Exception):
+    """expected_epoch tidak cocok di dalam transaksi: pengerjaan sudah dihapus/direset oleh permintaan lain."""
+
+
+def reset_group(n, expected_epoch=None):
+    """Satu transaksi. Melempar exception bila gagal (rollback penuh); pemanggil TIDAK boleh melaporkan sukses.
+    expected_epoch (opsional, dipakai tombol 'Hapus Pengerjaan'): bila diberikan dan epoch kelompok sudah berbeda DI DALAM transaksi,
+    tidak ada yang dihapus dan StaleEpoch dilempar (mencegah dua permintaan bersamaan sama-sama menghapus/menaikkan epoch)."""
     c = conn()
     try:
         c.execute("BEGIN IMMEDIATE")
+        if expected_epoch is not None:
+            cur = c.execute("SELECT value FROM app_settings WHERE key = ?", (f"reset_epoch_{n}",)).fetchone()
+            if (int(cur["value"]) if cur and str(cur["value"]).isdigit() else 0) != expected_epoch:
+                raise StaleEpoch()
         sub = c.execute("DELETE FROM final_mission_submissions WHERE group_id = ?", (n,)).rowcount
         pres = c.execute("DELETE FROM presentations WHERE group_id = ?", (n,)).rowcount
         row = c.execute("SELECT value FROM app_settings WHERE key = ?", (f"reset_epoch_{n}",)).fetchone()

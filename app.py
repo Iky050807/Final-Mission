@@ -17,7 +17,7 @@ from services.pptx_export import build_pptx
 from services.slide_layout import expand_deck
 from services.final_service import get_members, save_members
 from services.group_access import GROUP_NUMBERS, parse_group_number, verify_group_code
-from services.reset_service import get_epoch, group_overview, reset_group
+from services.reset_service import get_epoch, group_overview, reset_group, StaleEpoch
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "ganti-secret-final-axis-2026")
@@ -358,7 +358,37 @@ def present_mode():
     if r:
         return r
     cfg = get_presentation_config(g.group)
-    return render_template("present_mode.html", group=g.group, deck=_deck(g.group, cfg))
+    return render_template("present_mode.html", group=g.group, deck=_deck(g.group, cfg),
+                           reset_epoch=get_epoch(g.group["id"]), csrf=csrf_token())
+
+
+@app.route("/api/final/delete-work", methods=["POST"])
+@group_required
+def api_delete_work():
+    """Hapus pengerjaan Final Mission KELOMPOK DI SESSION (tombol 'Hapus Pengerjaan' di Presentation Mode).
+    - Kelompok yang dihapus HANYA diambil dari session server (g.group); ID kelompok dari klien tidak pernah dipakai sebagai target.
+      Body hanya memuat `confirm` dan `group_number` (pemeriksaan silang: harus sama dengan kelompok di session, selain itu 403 dan tidak ada yang dihapus).
+    - Wajib token CSRF sesi (header X-CSRF-Token) dan `confirm: true`. Header X-Reset-Epoch (dicek group_required) menolak halaman usang / permintaan ulang.
+    - Satu transaksi (reset_service.reset_group): jawaban + anggota + presentasi kelompok ini dihapus, epoch dinaikkan.
+      Tidak menyentuh kelompok lain, identitas/kode akses, Final Code, studi kasus, maupun Website 1 dan 2."""
+    tok = request.headers.get("X-CSRF-Token") or ""
+    if not tok or not hmac.compare_digest(tok.encode(), str(session.get("csrf", "")).encode()):
+        return jsonify(success=False, reason="csrf"), 403
+    p = request.get_json(silent=True)
+    if not isinstance(p, dict) or p.get("confirm") is not True:
+        return jsonify(success=False, reason="not_confirmed"), 400
+    gn = p.get("group_number")
+    if isinstance(gn, bool) or gn != g.group["id"]:
+        return jsonify(success=False, reason="group_mismatch"), 403
+    hdr = request.headers.get("X-Reset-Epoch")
+    try:
+        r = reset_group(g.group["id"], int(hdr) if hdr is not None and hdr.isdigit() else None)
+    except StaleEpoch:
+        return jsonify(success=False, reason="reset_happened"), 409
+    except Exception:
+        app.logger.exception("hapus pengerjaan W3 gagal")
+        return jsonify(success=False, reason="server_error"), 500
+    return jsonify(success=True, **r)
 
 
 @app.route("/download/pptx")

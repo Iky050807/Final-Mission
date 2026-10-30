@@ -47,3 +47,18 @@ body.pm-fullscreen .pm-stage{ height:100vh; padding: 4vh 4vw; }
 @media (max-width:720px){
   .pm-toolbar{ flex-direction:column; gap:10px; align-items:flex-start; }
 }
+
+/* ---- Hapus Pengerjaan (kontrol halaman, bukan bagian slide; tersembunyi saat fullscreen bersama toolbar) ---- */
+.pm-toolbar-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-right:56px; }   /* sisakan ruang tombol ✕ di kanan atas */
+.pm-delete-btn{ color:#ff8fa3; border-color: rgba(255,77,109,.4); }
+.pm-delete-btn:hover{ color:#fff; border-color: rgba(255,77,109,.75); box-shadow: 0 0 0 3px rgba(255,77,109,.14); }
+.btn-danger{ background: rgba(255,77,109,.16); border-color: rgba(255,77,109,.6); color:#ffd3db; }
+.btn-danger:hover{ background: rgba(255,77,109,.3); border-color:#ff4d6d; box-shadow: 0 0 0 4px rgba(255,77,109,.16); }
+.pm-confirm[hidden]{ display:none; }
+.pm-confirm.show{ opacity:1; pointer-events:all; }
+.pm-confirm .modal-box{ border-color: rgba(255,77,109,.5); }
+.pm-confirm-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:22px; }
+.pm-notice{ margin-top:16px; padding:10px 14px; border-radius:8px; font-size:.9rem; text-align:left; }
+.pm-notice.ok{ background: rgba(34,229,132,.12); border:1px solid rgba(34,229,132,.5); color:#b8f7d4; }
+.pm-notice.err{ background: rgba(255,77,109,.12); border:1px solid rgba(255,77,109,.5); color:#ffd3db; }
+@media (max-width:720px){ .pm-toolbar-actions{ margin-right:0; margin-top:44px; } }
